@@ -26,23 +26,23 @@ impl MLStrategy {
         }
     }
 
-    pub fn train(&mut self, prices: &Array1<f64>) -> Result<(), String> {
-        let (features, targets) = self.prepare_data(prices)?;
-        self.predictor.train(&features, &targets)?;
+    pub fn train(&mut self, prices: &Array1<f64>) -> anyhow::Result<()> {
+        let (features, targets) = self.prepare_data(prices).map_err(|e| anyhow::anyhow!(e))?;
+        self.predictor.train(&features, &targets).map_err(|e| anyhow::anyhow!(e))?;
         
-        let r2 = self.predictor.evaluate(&features, &targets)?;
+        let r2 = self.predictor.evaluate(&features, &targets).map_err(|e| anyhow::anyhow!(e))?;
         info!("Model trained with R² score: {:.4}", r2);
         
         Ok(())
     }
 
-    pub fn generate_signal(&self, recent_prices: &Array1<f64>) -> Result<Signal, String> {
+    pub fn generate_signal(&self, recent_prices: &Array1<f64>) -> anyhow::Result<Signal> {
         if recent_prices.len() < self.lookback_period {
-            return Err("Not enough price data".to_string());
+            return Err(anyhow::anyhow!("Not enough price data"));
         }
 
         let features = self.extract_features(recent_prices);
-        let prediction = self.predictor.predict(&features)?;
+        let prediction = self.predictor.predict(&features).map_err(|e| anyhow::anyhow!(e))?;
         
         let current_price = recent_prices[recent_prices.len() - 1];
         let predicted_price = prediction[0];
@@ -132,7 +132,6 @@ impl MLStrategy {
         // Close position if still open
         if position > 0.0 {
             capital = position * prices[prices.len() - 1];
-            position = 0.0;
         }
 
         let final_value = capital;

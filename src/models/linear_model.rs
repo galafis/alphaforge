@@ -1,5 +1,3 @@
-use linfa::prelude::*;
-use linfa_linear::LinearRegression;
 use ndarray::{Array1, Array2};
 use serde::{Deserialize, Serialize};
 
@@ -24,17 +22,42 @@ impl PricePredictor {
             return Err("Features and targets must have the same length".to_string());
         }
 
-        let dataset = Dataset::new(features.clone(), targets.clone());
+        // Simple linear regression using normal equation: θ = (X^T X)^-1 X^T y
+        // For simplicity, we'll use gradient descent instead
+        let n_samples = features.nrows();
+        let n_features = features.ncols();
         
-        let model = LinearRegression::default()
-            .fit(&dataset)
-            .map_err(|e| format!("Training failed: {:?}", e))?;
-
-        self.coefficients = model.params().to_vec();
-        self.intercept = model.intercept();
-        self.feature_count = features.ncols();
+        self.feature_count = n_features;
+        self.coefficients = vec![0.0; n_features];
+        self.intercept = 0.0;
+        
+        // Gradient descent
+        let learning_rate = 0.01;
+        let iterations = 1000;
+        
+        for _ in 0..iterations {
+            let predictions = self.predict_internal(features);
+            let errors: Array1<f64> = &predictions - targets;
+            
+            // Update coefficients
+            for j in 0..n_features {
+                let gradient: f64 = (0..n_samples)
+                    .map(|i| errors[i] * features[[i, j]])
+                    .sum::<f64>() / n_samples as f64;
+                self.coefficients[j] -= learning_rate * gradient;
+            }
+            
+            // Update intercept
+            let intercept_gradient: f64 = errors.sum() / n_samples as f64;
+            self.intercept -= learning_rate * intercept_gradient;
+        }
 
         Ok(())
+    }
+    
+    fn predict_internal(&self, features: &Array2<f64>) -> Array1<f64> {
+        let coeffs = Array1::from_vec(self.coefficients.clone());
+        features.dot(&coeffs) + self.intercept
     }
 
     pub fn predict(&self, features: &Array2<f64>) -> Result<Array1<f64>, String> {
@@ -68,23 +91,15 @@ impl PricePredictor {
         Ok(r2)
     }
 
-    pub fn save(&self, path: &str) -> Result<(), String> {
-        let json = serde_json::to_string_pretty(self)
-            .map_err(|e| format!("Serialization failed: {}", e))?;
-        
-        std::fs::write(path, json)
-            .map_err(|e| format!("Failed to write file: {}", e))?;
-
+    pub fn save(&self, path: &str) -> anyhow::Result<()> {
+        let json = serde_json::to_string_pretty(self)?;
+        std::fs::write(path, json)?;
         Ok(())
     }
 
-    pub fn load(path: &str) -> Result<Self, String> {
-        let json = std::fs::read_to_string(path)
-            .map_err(|e| format!("Failed to read file: {}", e))?;
-        
-        let model = serde_json::from_str(&json)
-            .map_err(|e| format!("Deserialization failed: {}", e))?;
-
+    pub fn load(path: &str) -> anyhow::Result<Self> {
+        let json = std::fs::read_to_string(path)?;
+        let model = serde_json::from_str(&json)?;
         Ok(model)
     }
 }

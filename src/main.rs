@@ -1,4 +1,4 @@
-use alphaforge::{MLStrategy, Signal};
+use alphaforge::MLStrategy;
 use clap::{Parser, Subcommand};
 use ndarray::Array1;
 use tracing::{info, Level};

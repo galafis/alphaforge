@@ -1,5 +1,4 @@
 use ndarray::{Array1, ArrayView1};
-use rust_decimal::Decimal;
 
 /// Calculate Simple Moving Average
 pub fn sma(prices: &ArrayView1<f64>, period: usize) -> Array1<f64> {
