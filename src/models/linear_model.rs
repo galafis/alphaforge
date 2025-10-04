@@ -87,7 +87,15 @@ impl PricePredictor {
             .map(|(&y, &pred)| (y - pred).powi(2))
             .sum();
 
-        let r2 = 1.0 - (ss_res / ss_tot);
+        // Clamp R² to reasonable range
+        let r2 = if ss_tot == 0.0 || ss_tot.is_nan() || ss_res.is_nan() {
+            0.0
+        } else {
+            let raw_r2 = 1.0 - (ss_res / ss_tot);
+            // R² can be negative for very poor fits, clamp to [-1, 1]
+            raw_r2.max(-1.0).min(1.0)
+        };
+        
         Ok(r2)
     }
 

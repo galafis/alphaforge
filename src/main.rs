@@ -59,10 +59,17 @@ fn main() -> anyhow::Result<()> {
 fn run_training(samples: usize) -> anyhow::Result<()> {
     info!("Training model with {} samples", samples);
 
-    // Generate synthetic price data (trending upward with noise)
+    // Generate synthetic price data (trending upward with noise and volatility)
+    use rand::Rng;
+    let mut rng = rand::thread_rng();
     let prices: Array1<f64> = Array1::from_vec(
         (0..samples)
-            .map(|i| 100.0 + i as f64 * 0.1 + (i as f64 * 0.1).sin() * 5.0)
+            .map(|i| {
+                let trend = 100.0 + i as f64 * 0.1;
+                let seasonal = (i as f64 * 0.1).sin() * 5.0;
+                let noise = rng.gen_range(-2.0..2.0);
+                trend + seasonal + noise
+            })
             .collect(),
     );
 
