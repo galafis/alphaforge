@@ -23,6 +23,22 @@
 - **Backtesting Engine**: Historical simulation with performance metrics
 - **Portfolio Optimization**: Markowitz mean-variance optimization
 
+### 🏗️ Architecture
+
+![Architecture Diagram](docs/images/architecture.png)
+
+The system is organized into modular layers:
+
+1. **Data Layer**: Market data ingestion and historical data management
+2. **Feature Engineering**: Technical indicators (SMA, EMA, RSI, MACD, Bollinger Bands, ATR)
+3. **ML Models**: Linear regression with gradient descent optimization
+4. **Strategy Layer**: ML-based signal generation (Buy/Sell/Hold)
+5. **Backtesting**: Performance evaluation and metrics
+
+### 📊 ML Training Flow
+
+![ML Flow Diagram](docs/images/ml_flow.png)
+
 ### 🛠️ Installation
 
 ```bash
@@ -143,6 +159,22 @@ MIT License - see [LICENSE](LICENSE) for details.
 - **Feature Engineering**: Extração e seleção automatizada de features
 - **Engine de Backtesting**: Simulação histórica com métricas de desempenho
 - **Otimização de Portfólio**: Otimização média-variância de Markowitz
+
+### 🏗️ Arquitetura
+
+![Diagrama de Arquitetura](docs/images/architecture.png)
+
+O sistema é organizado em camadas modulares:
+
+1. **Camada de Dados**: Ingestão de dados de mercado e gerenciamento de dados históricos
+2. **Feature Engineering**: Indicadores técnicos (SMA, EMA, RSI, MACD, Bandas de Bollinger, ATR)
+3. **Modelos de ML**: Regressão linear com otimização por gradient descent
+4. **Camada de Estratégia**: Geração de sinais baseada em ML (Compra/Venda/Manter)
+5. **Backtesting**: Avaliação de desempenho e métricas
+
+### 📊 Fluxo de Treinamento ML
+
+![Diagrama de Fluxo ML](docs/images/ml_flow.png)
 
 ### 📄 Licença
 

@@ -1,0 +1,55 @@
+graph TB
+    subgraph "Data Layer"
+        MD[Market Data]
+        HD[Historical Data]
+    end
+    
+    subgraph "Feature Engineering"
+        FE[Feature Extractor]
+        TI[Technical Indicators]
+        FE --> TI
+        TI --> SMA[SMA]
+        TI --> EMA[EMA]
+        TI --> RSI[RSI]
+        TI --> MACD[MACD]
+        TI --> BB[Bollinger Bands]
+        TI --> ATR[ATR]
+    end
+    
+    subgraph "ML Models"
+        LR[Linear Regression]
+        GD[Gradient Descent]
+        LR --> GD
+    end
+    
+    subgraph "Strategy Layer"
+        MLS[ML Strategy]
+        SG[Signal Generator]
+        MLS --> SG
+    end
+    
+    subgraph "Backtesting"
+        BE[Backtest Engine]
+        PM[Performance Metrics]
+        BE --> PM
+    end
+    
+    subgraph "Output"
+        TS[Trading Signals]
+        RP[Reports]
+    end
+    
+    MD --> FE
+    HD --> FE
+    FE --> LR
+    LR --> MLS
+    MLS --> BE
+    MLS --> TS
+    BE --> RP
+    
+    style MD fill:#e1f5ff
+    style FE fill:#fff4e1
+    style LR fill:#ffe1f5
+    style MLS fill:#e1ffe1
+    style BE fill:#f5e1ff
+    style TS fill:#ffe1e1

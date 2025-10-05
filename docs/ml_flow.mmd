@@ -1,0 +1,36 @@
+sequenceDiagram
+    participant User
+    participant Strategy as ML Strategy
+    participant Features as Feature Extractor
+    participant Model as Linear Model
+    participant Backtest as Backtest Engine
+    
+    User->>Strategy: Initialize with params
+    User->>Strategy: Provide training data
+    
+    Strategy->>Features: Extract features
+    Features->>Features: Calculate SMA, EMA
+    Features->>Features: Calculate RSI, MACD
+    Features->>Features: Calculate Bollinger, ATR
+    Features-->>Strategy: Return feature matrix
+    
+    Strategy->>Model: Train model
+    Model->>Model: Gradient descent (epochs)
+    Model->>Model: Update weights & bias
+    Model->>Model: Calculate R² score
+    Model-->>Strategy: Model trained
+    
+    User->>Strategy: Request signal
+    Strategy->>Features: Extract recent features
+    Features-->>Strategy: Feature vector
+    Strategy->>Model: Predict price
+    Model-->>Strategy: Prediction
+    Strategy->>Strategy: Generate signal (Buy/Sell/Hold)
+    Strategy-->>User: Trading signal
+    
+    User->>Strategy: Run backtest
+    Strategy->>Backtest: Simulate trades
+    Backtest->>Backtest: Track positions
+    Backtest->>Backtest: Calculate P&L
+    Backtest-->>Strategy: Performance metrics
+    Strategy-->>User: Backtest results
